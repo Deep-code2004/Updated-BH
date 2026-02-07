@@ -6,17 +6,28 @@ import LiveMonitor from './components/LiveMonitor';
 import RiskInsights from './components/RiskInsights';
 import AlertFeed from './components/AlertFeed';
 import DataExport from './components/DataExport';
+import VideoAnalysis from './components/VideoAnalysis';
+import Splash from './components/Splash';
 import { getCrowdAnalysis } from './services/geminiService';
 import { dataLogger } from './services/dataLogger';
 import { Alert, AlertSeverity, CrowdMetric, AIAnalysisResponse } from './types';
 import { TEMPLE_LOCATIONS } from './constants';
 
 const App: React.FC = () => {
+  const [showingSplash, setShowingSplash] = useState(true);
   const [selectedTemple, setSelectedTemple] = useState(TEMPLE_LOCATIONS[0].id);
-  const [currentView, setCurrentView] = useState<'analytics' | 'live-feeds' | 'heatmaps' | 'alert-logs' | 'settings'>('analytics');
+  const [currentView, setCurrentView] = useState<'analytics' | 'live-feeds' | 'heatmaps' | 'alert-logs' | 'settings' | 'video-analysis'>('analytics');
   const [metrics, setMetrics] = useState<CrowdMetric[]>([]);
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [cameraEnabled, setCameraEnabled] = useState(true);
+
+  // Show splash screen for 3 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowingSplash(false);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Handle temple selection with logging
   const handleAcknowledgeAlert = useCallback((alertId: string) => {
@@ -133,6 +144,10 @@ const App: React.FC = () => {
 
   const activeTemple = TEMPLE_LOCATIONS.find(t => t.id === selectedTemple);
 
+  if (showingSplash) {
+    return <Splash />;
+  }
+
   return (
     <div className="flex min-h-screen bg-[#0f172a]">
       <Sidebar
@@ -165,7 +180,7 @@ const App: React.FC = () => {
                 <StatCard icon="fa-shield" label="Deployed" value="84" unit="units" color="text-blue-400" />
               </div>
 
-              <LiveMonitor metrics={metrics} />
+              <LiveMonitor metrics={metrics} cameraEnabled={cameraEnabled} onToggleCamera={handleCameraToggle} />
 
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2">
@@ -186,8 +201,8 @@ const App: React.FC = () => {
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-white">Live Camera Feeds</h2>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <LiveMonitor metrics={metrics} />
-                <LiveMonitor metrics={metrics} />
+                <LiveMonitor metrics={metrics} cameraEnabled={cameraEnabled} onToggleCamera={handleCameraToggle} />
+                <LiveMonitor metrics={metrics} cameraEnabled={cameraEnabled} onToggleCamera={handleCameraToggle} />
               </div>
             </div>
           )}
@@ -253,6 +268,13 @@ const App: React.FC = () => {
                   </div>
                 </div>
               </div>
+            </div>
+          )}
+
+          {currentView === 'video-analysis' && (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold text-white">Video Analysis</h2>
+              <VideoAnalysis />
             </div>
           )}
         </div>
@@ -357,8 +379,8 @@ const App: React.FC = () => {
 const StatCard = ({ icon, label, value, unit, color }: { icon: string; label: string; value: string; unit: string; color: string }) => (
   <div className="bg-slate-900 border border-slate-800 p-5 rounded-xl shadow-lg hover:border-slate-700 transition-all group">
     <div className="flex items-center justify-between mb-3">
-       <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{label}</span>
-       <i className={`fas ${icon} ${color} opacity-80 group-hover:scale-110 transition-transform`}></i>
+      <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{label}</span>
+      <i className={`fas ${icon} ${color} opacity-80 group-hover:scale-110 transition-transform`}></i>
     </div>
     <div className="flex items-baseline gap-2">
       <span className="text-2xl font-black text-white">{value}</span>

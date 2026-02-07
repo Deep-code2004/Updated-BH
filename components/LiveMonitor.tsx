@@ -5,9 +5,11 @@ import { CrowdMetric, AlertSeverity } from '../types';
 interface LiveMonitorProps {
   metrics: CrowdMetric[];
   onExpand?: () => void;
+  cameraEnabled?: boolean;
+  onToggleCamera?: () => void;
 }
 
-const LiveMonitor: React.FC<LiveMonitorProps> = ({ metrics, onExpand }) => {
+const LiveMonitor: React.FC<LiveMonitorProps> = ({ metrics, onExpand, cameraEnabled = true, onToggleCamera }) => {
   const [frame, setFrame] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
@@ -18,9 +20,15 @@ const LiveMonitor: React.FC<LiveMonitorProps> = ({ metrics, onExpand }) => {
     return () => clearInterval(timer);
   }, []);
 
-  // Use camera if available, otherwise show placeholder
+  // Use camera if available and enabled, otherwise show placeholder
   useEffect(() => {
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    // Skip camera access on GitHub Pages to avoid errors
+    if (window.location.hostname.includes('github.io')) {
+      console.log("Skipping camera access on GitHub Pages");
+      return;
+    }
+
+    if (cameraEnabled && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       navigator.mediaDevices.getUserMedia({ video: true })
         .then(stream => {
           if (videoRef.current) {
@@ -28,8 +36,15 @@ const LiveMonitor: React.FC<LiveMonitorProps> = ({ metrics, onExpand }) => {
           }
         })
         .catch(err => console.log("Webcam access denied", err));
+    } else if (!cameraEnabled && videoRef.current) {
+      // Stop the camera stream when disabled
+      const stream = videoRef.current.srcObject as MediaStream;
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        videoRef.current.srcObject = null;
+      }
     }
-  }, []);
+  }, [cameraEnabled]);
 
   const handleExpand = () => {
     if (onExpand) {
@@ -131,6 +146,13 @@ const LiveMonitor: React.FC<LiveMonitorProps> = ({ metrics, onExpand }) => {
                title="View History"
              >
                <i className="fas fa-history"></i>
+             </button>
+             <button
+               onClick={onToggleCamera}
+               className={`cursor-pointer ${cameraEnabled ? 'text-red-400 hover:text-red-300' : 'text-green-400 hover:text-green-300'}`}
+               title={cameraEnabled ? 'Turn Off Camera' : 'Turn On Camera'}
+             >
+               <i className={`fas ${cameraEnabled ? 'fa-video-slash' : 'fa-video'}`}></i>
              </button>
           </div>
           <div className="flex items-center gap-2">

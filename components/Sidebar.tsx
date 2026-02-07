@@ -17,7 +17,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selectedTemple, onSelectTemple, curre
           <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
             <i className="fas fa-eye text-white text-sm"></i>
           </div>
-          <h1 className="text-xl font-bold tracking-tight text-white">Project Drishti</h1>
+          <h1 className="text-xl font-bold tracking-tight text-white">Anataya</h1>
         </div>
         <p className="text-xs text-slate-400 mt-1 uppercase tracking-widest font-semibold">Security Dashboard</p>
       </div>
@@ -51,6 +51,7 @@ const Sidebar: React.FC<SidebarProps> = ({ selectedTemple, onSelectTemple, curre
              <NavItem icon="fa-video" label="Live Feeds" active={currentView === 'live-feeds'} onClick={() => onSelectView('live-feeds')} />
              <NavItem icon="fa-map-marked-alt" label="Heatmaps" active={currentView === 'heatmaps'} onClick={() => onSelectView('heatmaps')} />
              <NavItem icon="fa-history" label="Alert Logs" active={currentView === 'alert-logs'} onClick={() => onSelectView('alert-logs')} />
+             <NavItem icon="fa-video" label="Video Analysis" active={currentView === 'video-analysis'} onClick={() => onSelectView('video-analysis')} />
              <NavItem icon="fa-cog" label="Settings" active={currentView === 'settings'} onClick={() => onSelectView('settings')} />
            </div>
         </div>

@@ -71,3 +71,35 @@ export interface ReportData {
   topLocations: { location: string; alerts: number }[];
   hourlyTrends: { hour: number; metrics: number; alerts: number }[];
 }
+
+export enum CrowdCategory {
+  GOOD = 'GOOD', // 4-5 people
+  AVERAGE = 'AVERAGE', // 5-25 people
+  HIGH = 'HIGH' // >25 people
+}
+
+export enum Gender {
+  BOY = 'BOY',
+  GIRL = 'GIRL'
+}
+
+export interface GenderCount {
+  boys: number;
+  girls: number;
+}
+
+export interface CrowdAnalysisResult {
+  totalPeople: number;
+  category: CrowdCategory;
+  genderBreakdown: GenderCount;
+  timestamp: string;
+  location?: string;
+}
+
+export interface VideoAnalysis {
+  id: string;
+  fileName: string;
+  uploadedAt: string;
+  analysisResult: CrowdAnalysisResult;
+  videoUrl?: string;
+}

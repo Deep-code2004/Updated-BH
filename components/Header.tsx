@@ -35,10 +35,11 @@ const Header: React.FC<HeaderProps> = ({ locationName, status, cameraEnabled, on
 
         <button
           onClick={onToggleCamera}
-          className={`relative p-2 rounded-lg transition-all cursor-pointer ${cameraEnabled ? 'text-green-400 hover:text-green-300 hover:bg-green-400/10' : 'text-red-400 hover:text-red-300 hover:bg-red-400/10'}`}
+          className={`relative p-2 rounded-lg transition-all cursor-pointer flex items-center gap-2 ${cameraEnabled ? 'text-green-400 hover:text-green-300 hover:bg-green-400/10' : 'text-red-400 hover:text-red-300 hover:bg-red-400/10'}`}
           title={cameraEnabled ? 'Disable Camera' : 'Enable Camera'}
         >
           <i className={`fas fa-video text-xl ${cameraEnabled ? '' : 'opacity-50'}`}></i>
+          <span className="text-sm font-medium"></span>
         </button>
 
         <button
